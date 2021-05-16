@@ -1,0 +1,21 @@
+diff --git a/src/test/org/apache/commons/jxpath/ri/JXPathContextReferenceImplTestCase.java b/src/test/org/apache/commons/jxpath/ri/JXPathContextReferenceImplTestCase.java
+deleted file mode 100644
+index d1dead3..0000000
+--- a/src/test/org/apache/commons/jxpath/ri/JXPathContextReferenceImplTestCase.java
++++ /dev/null
+@@ -1,15 +0,0 @@
+-package org.apache.commons.jxpath.ri;
+-
+-import junit.framework.TestCase;
+-
+-import org.apache.commons.jxpath.ri.model.container.ContainerPointerFactory;
+-
+-public class JXPathContextReferenceImplTestCase extends TestCase {
+-
+-    /**
+-     * https://issues.apache.org/jira/browse/JXPATH-166
+-     */
+-    public void testInit() {
+-        JXPathContextReferenceImpl.addNodePointerFactory(new ContainerPointerFactory());
+-    }
+-}

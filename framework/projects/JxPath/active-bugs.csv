@@ -21,3 +21,6 @@ bug.id,revision.id.buggy,revision.id.fixed,report.id,report.url
 20,a48b10d2a39eab2eb5a6a7309edc98803ceffe81,820a69d81b3b5d33f4a2b2cd9f153450f7535452,JXPATH-149,https://issues.apache.org/jira/browse/JXPATH-149
 21,820a69d81b3b5d33f4a2b2cd9f153450f7535452,99a20785daf2bfc018552e2eabed1067bf225013,JXPATH-151,https://issues.apache.org/jira/browse/JXPATH-151
 22,5c538c4e51c6c5ebb43182d0c6e99ee8f7b3590c,afa2deca94436837e785b89362cfaaf84a8ca1bd,JXPATH-154,https://issues.apache.org/jira/browse/JXPATH-154
+23,b247c3f8f7e242d54f4824ed4c7868914925075a,cd7b5363f4d505070c4438436caf0cdcdae3b5ec,JXPATH-111,https://issues.apache.org/jira/browse/JXPATH-111
+24,cd0b3e7260bd6dbc87f0ae86308cf35d79e14d8f,788f8dcdb0be4c8ec90efc130272a346bf513a03,JXPATH-120,https://issues.apache.org/jira/browse/JXPATH-120
+25,1a3d3e328e8dff4b1eed91eb13191e65874edaff,dceb292201df5d107168efa0da1b960a482d6617,JXPATH-166,https://issues.apache.org/jira/browse/JXPATH-166

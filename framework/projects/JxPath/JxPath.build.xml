@@ -26,7 +26,7 @@ It defines project-specific properties and targets, and imports the build file
 of the checked-out project version.
 #############################################################################-->
 <project name="D4j-JxPath" basedir="${basedir}">
-
+    
     <property name="junit.jar" value="${d4j.home}/framework/projects/lib/junit-4.11.jar"/>
 
     <!-- Generate all debugging information -->
@@ -46,6 +46,7 @@ of the checked-out project version.
         <pathelement location="${d4j.workdir}/src/test"/>
     </path>
     <property name="build.classes" value="${classes.dir}" />
+    <!-- main - test/java  the classpath should be written as ../../(org)  -->
     <property name="test.home" value="${d4j.workdir}/src/test" />
     <property name="test.dir" value="${test.home}" />
     <property name="build.home" value="${classes.dir}/.." />
@@ -69,4 +70,91 @@ of the checked-out project version.
     <!-- List of relevant developer-written tests that reliably pass on the fixed version -->
     <fileset id="rel.manual.tests" dir="${test.home}"
         includesfile="${d4j.dir.projects}/${d4j.project.id}/relevant_tests/${d4j.bug.id}" />
+     
+        
+      <target name="get-deps" unless="noget" depends="init">
+    <get dest="${libdir}/xerces-1.2.3.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/xerces/xerces/1.2.3/xerces-1.2.3.jar">
+    </get>
+    <get dest="${libdir}/servletapi-2.2.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/servletapi/servletapi/2.2/servletapi-2.2.jar">
+    </get>
+    <get dest="${libdir}/junit-3.8.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/junit/junit/3.8/junit-3.8.jar">
+    </get>
+    <get dest="${libdir}/ant-optional-1.5.1.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/ant/ant-optional/1.5.1/ant-optional-1.5.1.jar">
+    </get>
+    <get dest="${libdir}/xml-apis-2.0.2.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/xml-apis/xml-apis/2.0.2/xml-apis-2.0.2.jar">
+    </get>
+    <get dest="${libdir}/jdom-1.0.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/jdom/jdom/1.0/jdom-1.0.jar">
+    </get>
+    <get dest="${libdir}/commons-beanutils-1.4.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.4/commons-beanutils-1.4.jar">
+    </get>
+    <get dest="${libdir}/commons-logging-1.0.4.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar">
+    </get>
+    <get dest="${libdir}/commons-collections-2.0.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/commons-collections/commons-collections/2.0/commons-collections-2.0.jar">
+    </get>
+    <get dest="${libdir}/junit-3.8.1.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/junit/junit/3.8.1/junit-3.8.1.jar">
+    </get>
+    <get dest="${libdir}/ant-1.5.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/ant/ant/1.5/ant-1.5.jar">
+    </get>
+    <get dest="${libdir}/ant-optional-1.5.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/ant/ant-optional/1.5/ant-optional-1.5.jar">
+    </get>
+     <get dest="${libdir}/mockrunner-jdk1.3-j2ee1.3-0.4.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/com/mockrunner/mockrunner-jdk1.3-j2ee1.3/0.4/mockrunner-jdk1.3-j2ee1.3-0.4.jar">
+    </get>     
+    <get dest="${libdir}/commons-beanutils-1.7.0.jar" usetimestamp="true" ignoreerrors="true" src="https://repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar">
+    </get>
+  </target>
+  <target name="install-maven">
+    <get dest="${user.home}/maven-install-latest.jar" usetimestamp="true" src="${repo}/maven/maven-install-latest.jar">
+    </get>
+    <unjar dest="${maven.home}" src="${user.home}/maven-install-latest.jar">
+    </unjar>
+  </target>
+  
+  <target name="compile" description="o Compile the code" depends="get-deps">
+    <mkdir dir="${classes.dir}">
+    </mkdir>
+    <javac destdir="${classes.dir}" deprecation="true" debug="true" optimize="false" excludes="**/package.html">
+      <src>
+        <pathelement location="${basedir}/src/test">
+        </pathelement>
+      </src>
+      <classpath>
+        <fileset dir="${libdir}">
+          <include name="*.jar">
+          </include>
+        </fileset>
+      </classpath>
+    </javac>
+    <copy todir="${test.classes.dir}">
+      <fileset dir="src/test">
+        <include name="*.xml">
+        </include>
+      </fileset>
+    </copy>
+  </target>
+  
+   <target name="compile.tests" depends="compile">
+    <mkdir dir="${test.classes.dir}">
+    </mkdir>
+    <javac destdir="${test.classes.dir}" deprecation="true" debug="true" optimize="false" excludes="**/package.html">
+      <src>
+        <pathelement location="${basedir}/src/test">
+        </pathelement>
+      </src>
+      <classpath>
+        <fileset dir="${libdir}">
+          <include name="*.jar">
+          </include>
+        </fileset>
+        <pathelement path="${classes.dir}">
+        </pathelement>
+      </classpath>
+    </javac>
+    <copy todir="${test.classes.dir}">
+      <fileset dir="${basedir}/src/test">
+        <include name="**/*.xml">
+        </include>
+      </fileset>
+    </copy>
+  </target>
+  
 </project>

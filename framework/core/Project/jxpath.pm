@@ -36,10 +36,9 @@ package Project::JxPath;
 
 use strict;
 use warnings;
-
+use File::Copy;
 use Constants;
 use Vcs::Git;
-use File::Copy;
 
 our @ISA = qw(Project);
 my $PID  = "JxPath";
@@ -60,22 +59,16 @@ sub new {
 ##
 ## Determines the directory layout for sources and tests
 ##
-sub determine_layout {
-    @_ == 2 or die $ARG_ERROR;
-    my ($self, $rev_id) = @_;
-    my $work_dir = $self->{prog_root};
+#sub determine_layout {
+#    @_ == 2 or die $ARG_ERROR;
+#    my ($self, $rev_id) = @_;
+#    my $dir = $self->{prog_root};
 
-    # Only two sets of layouts in this case
-    my $result;
-    if (-e "$work_dir/src/main"){
-      $result = {src=>"src/main/java", test=>"src/test/java"};
-    }
-    if (-e "$work_dir/src/java"){
-      $result = {src=>"src/java", test=>"src/test"};
-    }
-    die "Unknown layout for revision: ${rev_id}" unless defined $result;
-    return $result;
-}
+#    # Add additional layouts if necessary
+#    my $result = _ant_layout($dir) // _maven_layout($dir);
+#    die "Unknown layout for revision: ${rev_id}" unless defined $result;
+#    return $result;
+#}
 
 #
 # Post-checkout tasks include, for instance, providing cached build files,
@@ -89,16 +82,15 @@ sub _post_checkout {
     unless (-e "$work_dir/build.xml") {
         my $build_files_dir = "$PROJECTS_DIR/$PID/build_files/$rev_id";
         if (-d "$build_files_dir") {
-            Utils::exec_cmd("cp -r $build_files_dir/* $work_dir", "Copy generated Ant build file") or die;
+            Utils::exec_cmd("cp $build_files_dir/* $work_dir", "Copy generated Ant build file") or die;
         }
     }
-
+    
     # Copy in a missing dependency
     mkdir $work_dir."/target";
     mkdir $work_dir."/target/lib";
-    copy($project_dir."/lib/mockrunner-0.4.1.jar", $work_dir."/target/lib/mockrunner-0.4.1.jar") or die "Copy failed: $!";
-
-    # JxPath uses "compile-tests" instead of "compile.test" as a target name. 
+     
+ # JxPath uses "compile-tests" instead of "compile.test" as a target name. 
     # Replace all instances of "compile-tests" with "compile.test".
     # They also use "build.classpath" instead of "compile.classpath".
     # This also replaces several dead links in the build file
@@ -111,25 +103,6 @@ sub _post_checkout {
             $_ =~ s/compile-tests/compile\.tests/g;
             $_ =~ s/classesdir/classes\.dir/g;
             $_ =~ s/testclasses\.dir/test\.classes\.dir/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven2\/com\/mockrunner\/mockrunner-jdk1.3-j2ee1.3\/0\.4\/mockrunner-jdk1\.3-j2ee1\.3-0\.4\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/mockrunner-0\.4\.1\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/servletapi\/jars\/servletapi-2\.4\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/servletapi\/servletapi\/2\.4\/servletapi-2\.4\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/jspapi\/jars\/jsp-api-2\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/jspapi\/jsp-api\/2\.0\/jsp-api-2\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-beanutils\/jars\/commons-beanutils-1\.7\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-beanutils\/commons-beanutils\/1\.7\.0\/commons-beanutils-1\.7\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-logging\/jars\/commons-logging-1\.1\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-logging\/commons-logging\/1\.1\/commons-logging-1\.1\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/junit\/jars\/junit-3\.8\.2\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/junit\/junit\/3\.8\.2\/junit-3\.8\.2\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/ant\/jars\/ant-optional-1\.5\.1\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/ant\/ant-optional\/1\.5\.1\/ant-optional-1\.5\.1\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/ant\/jars\/ant-1\.5\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/ant\/ant\/1\.5\/ant-1\.5\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/ant\/jars\/ant-optional-1\.5\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/ant\/ant-optional\/1\.5\/ant-optional-1\.5\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/xerces\/jars\/xerces-1\.2\.3\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/xerces\/xerces\/1\.2\.3\/xerces-1\.2\.3\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/xerces\/jars\/xerces-2\.4\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/xerces\/xerces\/2\.4\.0\/xerces-2\.4\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/servletapi\/jars\/servletapi-2\.2\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/servletapi\/servletapi\/2\.2\/servletapi-2\.2\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/junit\/jars\/junit-3\.8\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/junit\/junit\/3\.8\/junit-3\.8\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/xml-apis\/jars\/xml-apis-2\.0\.2\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/xml-apis\/xml-apis\/2\.0\.2\/xml-apis-2\.0\.2\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/jdom\/jars\/jdom-1\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/jdom\/jdom\/1\.0\/jdom-1\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-beanutils\/jars\/commons-beanutils-1\.4\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-beanutils\/commons-beanutils\/1\.4\/commons-beanutils-1\.4\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-logging\/jars\/commons-logging-1\.0\.4\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-logging\/commons-logging\/1\.0\.4\/commons-logging-1\.0\.4\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-collections\/jars\/commons-collections-2\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-collections\/commons-collections\/2\.0\/commons-collections-2\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/junit\/jars\/junit-3\.8\.1\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/junit\/junit\/3\.8\.1\/junit-3\.8\.1\.jar/g;
             print OUT $_;
         }
         close(IN);
@@ -144,31 +117,11 @@ sub _post_checkout {
             $_ =~ s/compile-tests/compile\.tests/g;
             $_ =~ s/classesdir/classes\.dir/g;
             $_ =~ s/testclasses\.dir/test\.classes\.dir/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven2\/com\/mockrunner\/mockrunner-jdk1.3-j2ee1.3\/0\.4\/mockrunner-jdk1\.3-j2ee1\.3-0\.4\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/mockrunner-0\.4\.1\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/servletapi\/jars\/servletapi-2\.4\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/servletapi\/servletapi\/2\.4\/servletapi-2\.4\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/jspapi\/jars\/jsp-api-2\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/jspapi\/jsp-api\/2\.0\/jsp-api-2\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-beanutils\/jars\/commons-beanutils-1\.7\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-beanutils\/commons-beanutils\/1\.7\.0\/commons-beanutils-1\.7\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-logging\/jars\/commons-logging-1\.1\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-logging\/commons-logging\/1\.1\/commons-logging-1\.1\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/junit\/jars\/junit-3\.8\.2\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/junit\/junit\/3\.8\.2\/junit-3\.8\.2\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/ant\/jars\/ant-optional-1\.5\.1\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/ant\/ant-optional\/1\.5\.1\/ant-optional-1\.5\.1\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/ant\/jars\/ant-1\.5\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/ant\/ant\/1\.5\/ant-1\.5\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/ant\/jars\/ant-optional-1\.5\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/ant\/ant-optional\/1\.5\/ant-optional-1\.5\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/xerces\/jars\/xerces-1\.2\.3\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/xerces\/xerces\/1\.2\.3\/xerces-1\.2\.3\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/xerces\/jars\/xerces-2\.4\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/xerces\/xerces\/2\.4\.0\/xerces-2\.4\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/servletapi\/jars\/servletapi-2\.2\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/servletapi\/servletapi\/2\.2\/servletapi-2\.2\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/junit\/jars\/junit-3\.8\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/junit\/junit\/3\.8\/junit-3\.8\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/xml-apis\/jars\/xml-apis-2\.0\.2\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/xml-apis\/xml-apis\/2\.0\.2\/xml-apis-2\.0\.2\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/jdom\/jars\/jdom-1\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/jdom\/jdom\/1\.0\/jdom-1\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-beanutils\/jars\/commons-beanutils-1\.4\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-beanutils\/commons-beanutils\/1\.4\/commons-beanutils-1\.4\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-logging\/jars\/commons-logging-1\.0\.4\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-logging\/commons-logging\/1\.0\.4\/commons-logging-1\.0\.4\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/commons-collections\/jars\/commons-collections-2\.0\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/commons-collections\/commons-collections\/2\.0\/commons-collections-2\.0\.jar/g;
-            $_ =~ s/http:\/\/www\.ibiblio\.org\/maven\/junit\/jars\/junit-3\.8\.1\.jar/file:\/\/$PROJECTS_DIR\/$PID\/lib\/junit\/junit\/3\.8\.1\/junit-3\.8\.1\.jar/g;
             print OUT $_;
         }
         close(IN);
         close(OUT);
     }
-
 }
 
 #
@@ -186,6 +139,62 @@ sub initialize_revision {
 
     $self->_add_to_layout_map($rev_id, $result->{src}, $result->{test});
     $self->_cache_layout_map(); # Force cache rebuild
+}
+
+sub determine_layout {
+    @_ == 2 or die $ARG_ERROR;
+    my ($self, $rev_id) = @_;
+    my $work_dir = $self->{prog_root};
+
+    # Only two sets of layouts in this case
+    my $result;
+    if (-e "$work_dir/fam/src/main"){
+      $result = {src=>"fam/src/main/java", test=>"fam/src/test/java"};
+    }
+    die "Unknown layout for revision: ${rev_id}" unless defined $result;
+    return $result;
+}
+
+#
+# Distinguish between project layouts and determine src and test directories.
+# Each _layout subroutine returns undef if it doesn't match the layout of the
+# checked-out version. Otherwise, it returns a hash that provides the src and
+# test directory, relative to the working directory.
+#
+
+#
+# Existing Ant build.xml and default.properties
+#
+sub _ant_layout {
+    @_ == 1 or die $ARG_ERROR;
+    my ($dir) = @_;
+    my $src  = `grep "source.home" $dir/default.properties 2>/dev/null`;
+    my $test = `grep "test.home" $dir/default.properties 2>/dev/null`;
+
+    # Check whether this layout applies to the checked-out version
+    return undef if ($src eq "" || $test eq "");
+
+    $src =~ s/\s*source.home\s*=\s*(\S+)\s*/$1/;
+    $test=~ s/\s*test.home\s*=\s*(\S+)\s*/$1/;
+
+    return {src=>$src, test=>$test};
+}
+
+#
+# Generated build.xml (from mvn ant:ant) with maven-build.properties
+#
+sub _maven_layout {
+    @_ == 1 or die $ARG_ERROR;
+    my ($dir) = @_;
+    my $src  = `grep "maven.build.srcDir.0" $dir/maven-build.properties 2>/dev/null`;
+    my $test = `grep "maven.build.testDir.0" $dir/maven-build.properties 2>/dev/null`;
+
+    return undef if ($src eq "" || $test eq "");
+
+    $src =~ s/\s*maven\.build\.srcDir\.0\s*=\s*(\S+)\s*/$1/;
+    $test=~ s/\s*maven\.build\.testDir\.0\s*=\s*(\S+)\s*/$1/;
+
+    return {src=>$src, test=>$test};
 }
 
 1;
