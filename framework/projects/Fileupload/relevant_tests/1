@@ -1,0 +1,4 @@
+org.apache.commons.fileupload.ProgressListenerTest
+org.apache.commons.fileupload.ServletFileUploadTest
+org.apache.commons.fileupload.SizesTest
+org.apache.commons.fileupload.StreamingTest

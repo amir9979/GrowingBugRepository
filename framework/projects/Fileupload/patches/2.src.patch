@@ -1,0 +1,118 @@
+diff --git a/src/java/org/apache/commons/fileupload/FileUploadException.java b/src/java/org/apache/commons/fileupload/FileUploadException.java
+index 3f2863b..6d84df3 100644
+--- a/src/java/org/apache/commons/fileupload/FileUploadException.java
++++ b/src/java/org/apache/commons/fileupload/FileUploadException.java
+@@ -92,8 +92,4 @@ public class FileUploadException extends Exception {
+             cause.printStackTrace(writer);
+         }
+     }
+-
+-    public Throwable getCause() {
+-        return cause;
+-    }
+ }
+diff --git a/src/java/org/apache/commons/fileupload/MultipartStream.java b/src/java/org/apache/commons/fileupload/MultipartStream.java
+index 3e590ac..5b1e527 100644
+--- a/src/java/org/apache/commons/fileupload/MultipartStream.java
++++ b/src/java/org/apache/commons/fileupload/MultipartStream.java
+@@ -21,7 +21,6 @@ import java.io.IOException;
+ import java.io.InputStream;
+ import java.io.OutputStream;
+ import java.io.UnsupportedEncodingException;
+-import java.util.Arrays;
+ 
+ import org.apache.commons.fileupload.util.Closeable;
+ import org.apache.commons.fileupload.util.Streams;
+@@ -203,6 +202,13 @@ public class MultipartStream {
+         CR, LF, DASH, DASH};
+ 
+ 
++    /**
++     * The number of bytes, over and above the boundary size, to use for the
++     * keep region.
++     */
++    private static final int KEEP_REGION_PAD = 3;
++
++
+     // ----------------------------------------------------------- Data members
+ 
+ 
+@@ -335,7 +341,7 @@ public class MultipartStream {
+         // body-data tokens.
+         this.boundary = new byte[boundary.length + BOUNDARY_PREFIX.length];
+         this.boundaryLength = boundary.length + BOUNDARY_PREFIX.length;
+-        this.keepRegion = this.boundary.length;
++        this.keepRegion = boundary.length + KEEP_REGION_PAD;
+         System.arraycopy(BOUNDARY_PREFIX, 0, this.boundary, 0,
+                 BOUNDARY_PREFIX.length);
+         System.arraycopy(boundary, 0, this.boundary, BOUNDARY_PREFIX.length,
+@@ -415,7 +421,8 @@ public class MultipartStream {
+      *
+      * @throws IOException if there is no more data available.
+      */
+-    public byte readByte() throws IOException {
++    public byte readByte()
++    throws IOException {
+         // Buffer depleted ?
+         if (head == tail) {
+             head = 0;
+@@ -425,9 +432,7 @@ public class MultipartStream {
+                 // No more data available.
+                 throw new IOException("No more data is available");
+             }
+-            if(notifier != null) {
+-                notifier.noteBytesRead(tail);
+-            }
++            notifier.noteBytesRead(tail);
+         }
+         return buffer[head++];
+     }
+@@ -850,7 +855,7 @@ public class MultipartStream {
+                 throw new FileItemStream.ItemSkippedException();
+             }
+             if (available() == 0) {
+-                if (makeAvailable() == 0) {                         
++                if (makeAvailable() == 0) {
+                     return -1;
+                 }
+             }
+@@ -952,28 +957,18 @@ public class MultipartStream {
+ 
+             // Refill buffer with new data.
+             head = 0;
+-            tail = pad;
+-
+-            for(;;) {
+-                int bytesRead = input.read(buffer, tail, bufSize - tail);
+-                if (bytesRead == -1) {
+-                    // The last pad amount is left in the buffer.
+-                    // Boundary can't be in there so signal an error
+-                    // condition.
+-                    throw new MalformedStreamException("Stream ended unexpectedly");
+-                }
+-                if(notifier != null) {
+-                    notifier.noteBytesRead(bytesRead);
+-                }
+-                tail += bytesRead;
+-
+-                findSeparator();
+-                int av = available();
+-
+-                if (av > 0 || pos != -1) {
+-                    return av;
+-                }
++            int bytesRead = input.read(buffer, pad, bufSize - pad);
++            if (bytesRead == -1) {
++                // The last pad amount is left in the buffer.
++                // Boundary can't be in there so signal an error
++                // condition.
++                throw new MalformedStreamException(
++                "Stream ended unexpectedly");
+             }
++            notifier.noteBytesRead(bytesRead);
++            tail = pad + bytesRead;
++            findSeparator();
++            return available();
+         }
+ 
+         /**
