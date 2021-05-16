@@ -1,0 +1,2 @@
+bug.id,revision.id.buggy,revision.id.fixed,report.id,report.url
+1,3e50da82052f8cf2915819513da0113b3425fc34,c638cc002c9211fdcf9cce29a499409dea7e0175,MEAR-116,https://issues.apache.org/jira/browse/MEAR-116

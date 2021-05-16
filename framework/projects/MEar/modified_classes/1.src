@@ -1,0 +1,3 @@
+org.apache.maven.plugin.ear.output.AbstractFileNameMapping
+org.apache.maven.plugin.ear.output.FullFileNameMapping
+org.apache.maven.plugin.ear.output.StandardFileNameMapping

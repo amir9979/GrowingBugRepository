@@ -1,0 +1,13 @@
+diff --git a/src/test/java/org/apache/maven/plugins/gpg/GpgVersionConsumerTest.java b/src/test/java/org/apache/maven/plugins/gpg/GpgVersionConsumerTest.java
+index 15f30cd..264a9f2 100644
+--- a/src/test/java/org/apache/maven/plugins/gpg/GpgVersionConsumerTest.java
++++ b/src/test/java/org/apache/maven/plugins/gpg/GpgVersionConsumerTest.java
+@@ -34,7 +34,7 @@ public class GpgVersionConsumerTest
+         GpgVersionConsumer consumer = new GpgVersionConsumer();
+         consumer.consumeLine( "gpg (GnuPG/MacGPG2) 2.2.10" );
+ 
+-        assertThat( consumer.getGpgVersion().toString(), is( GpgVersion.parse( "2.2.10" ).toString() ) );
++        assertThat( consumer.getGpgVersion().toString(), is( "gpg (GnuPG/MacGPG2) 2.2.10" ) );
+     }
+ 
+ }

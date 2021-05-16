@@ -1,0 +1,6 @@
+org.apache.maven.plugin.ear.AbstractEarTest
+org.apache.maven.plugin.ear.ArtifactHandlerTestStub
+org.apache.maven.plugin.ear.ArtifactTestStub
+org.apache.maven.plugin.ear.output.AbstractFileNameMappingTest
+org.apache.maven.plugin.ear.output.FullFileNameMappingTest
+org.apache.maven.plugin.ear.output.StandardFileNameMappingTest

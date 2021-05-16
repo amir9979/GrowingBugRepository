@@ -1,0 +1,27 @@
+diff --git a/src/test/java/org/apache/commons/functor/generator/TestTransformedGenerator.java b/src/test/java/org/apache/commons/functor/generator/TestTransformedGenerator.java
+index a1db452..343bfe1 100644
+--- a/src/test/java/org/apache/commons/functor/generator/TestTransformedGenerator.java
++++ b/src/test/java/org/apache/commons/functor/generator/TestTransformedGenerator.java
+@@ -14,7 +17,6 @@
+ package org.apache.commons.functor.generator;
+ import static org.junit.Assert.assertEquals;
+-import static org.junit.Assert.assertFalse;
+ import static org.junit.Assert.assertTrue;
+ import static org.junit.Assert.fail;
+@@ -88,24 +91,18 @@ public class TestTransformedGenerator
+     @Test
+     public void testHashcode() {
+         assertEquals(sumsTwoGenerator.hashCode(), sumsTwoGenerator.hashCode());
+         assertEquals(sumsTwoGenerator.hashCode(), new TransformedGenerator<Integer, Integer>(wrappedGenerator, sumsTwo).hashCode());
+-        assertFalse(sumsTwoGenerator.hashCode() == new TransformedGenerator<Integer, Integer>(wrappedGenerator, sumsTwo) {
+-            @Override
+-            protected Generator<? extends Integer> getWrappedGenerator() {
+-                return null;
+-            }
+-        }.hashCode());
+     }
+    
+     @Test
+     public void testGenerate() {
+         final List<Integer> doubledValues = new ArrayList<Integer>();
+
