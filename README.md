@@ -36,12 +36,14 @@ To date, growingBugs contains 1003 bugs from open-source Java projects.
 | MEar            | maven-ear-plugin       |              1 | 1                 | None                    |
 | MGpg            | maven-gpg-plugin       |              3 | 1-3               | None                    |
 | Pool            | commons-pool           |             30 | 1-30              | None                    |
-| Email           | commons-email          |              4 | 2-5               | None                    |
+| Email           | commons-email          |              5 | 1-5               | None                    |
 | Graph           | commons-graph          |              4 | 1-4               | None                    |
 | Digester        | commons-digester       |              1 | 1                 | None                    |
 | Net             | commons-net            |             27 | 1-27              | None                    |
 | Text            | commons-text           |              6 | 1-6               | None                    |
-| Numbers         | commons-numbers        |              3 | 1-3               | None                    |
+| Numbers_angle   | commons-numbers-angle  |              3 | 1-3               | None                    |
+| Geometry_core   | commons-geometry-core  |              3 | 1-3               | None                    |
+| Fileupload      | commons-fileupload     |              2 | 1-2               | None                    |
 
 ## Copyright
 Notably, this bug repository is based on the well-known Defects4J https://github.com/rjust/defects4j. We reuse its source code as well as the bugs in Defects4J. 
