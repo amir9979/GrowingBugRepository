@@ -1,0 +1,21 @@
+diff --git a/src/test/java/org/apache/commons/text/WordUtilsTest.java b/src/test/java/org/apache/commons/text/WordUtilsTest.java
+index 271a8f0..4511efa 100644
+--- a/src/test/java/org/apache/commons/text/WordUtilsTest.java
++++ b/src/test/java/org/apache/commons/text/WordUtilsTest.java
+@@ -229,16 +229,6 @@ public class WordUtilsTest {
+         assertEquals("Alphabet", WordUtils.capitalizeFully("alphabet") ); // single word
+     }
+ 
+-    @Test
+-    public void testCapitalizeFully_Text88() {
+-        assertEquals("I am fine now",WordUtils.capitalizeFully("i am fine now", new char[]{}));
+-    }
+-
+-    @Test
+-    public void testUnCapitalize_Text88() {
+-        assertEquals("i am fine now",WordUtils.uncapitalize("I am fine now", new char[]{}));
+-    }
+-
+     @Test
+     public void testCapitalizeFullyWithDelimiters_String() {
+         assertEquals(null, WordUtils.capitalizeFully(null, null));
