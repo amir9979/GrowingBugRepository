@@ -41,8 +41,8 @@ To date, growingBugs contains 1003 bugs from open-source Java projects.
 | Digester        | commons-digester       |              1 | 1                 | None                    |
 | Net             | commons-net            |             27 | 1-27              | None                    |
 | Text            | commons-text           |              6 | 1-6               | None                    |
-| Numbers_angle   | commons-numbers-angle  |              3 | 1-3               | None                    |
-| Geometry_core   | commons-geometry-core  |              3 | 1-3               | None                    |
+| Numbers_angle   | commons-numbers        |              3 | 1-3               | None                    |
+| Geometry_core   | commons-geometry       |              3 | 1-3               | None                    |
 | Fileupload      | commons-fileupload     |              2 | 1-2               | None                    |
 
 ## Copyright
